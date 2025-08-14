@@ -123,7 +123,7 @@ const InventoryForm = ({ item, inventoryTypes, onSuccess, onCancel }) => {
                 <option value="">Seleccionar tipo...</option>
                 {activeInventoryTypes.map((t) => (
                   <option key={t.id} value={t.id}>
-                    {t.name ?? t.description /* por si tu API devuelve description */}
+                    {t.name ?? t.description }
                   </option>
                 ))}
               </select>
