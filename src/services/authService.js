@@ -16,7 +16,7 @@ export const authService = {
             // Manejo explícito para evitar redirecciones globales del handleResponse en 401
             if (!response.ok) {
                 // Intentar leer el cuerpo para obtener mensaje del backend
-                let message = 'Error al iniciar sesión. Intenta nuevamente.';
+                let message = 'Credenciales invalida. Verifica tu email y contraseña.';
                 try {
                     const errData = await response.json();
                     if (errData && (errData.detail || errData.message)) {
