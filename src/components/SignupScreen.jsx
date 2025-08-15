@@ -280,13 +280,11 @@ const SignupScreen = () => {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  onKeyDown={(e) => e.key === "Enter" && handleSignup()}
                 />
               </div>
 
               <button
                 type="submit"
-                onClick={handleSignup}
                 disabled={isSubmitting}
                 className="btn btn-primary w-full rounded-full text-black bg-purple-200 hover:bg-purple-300 border-none"
               >
