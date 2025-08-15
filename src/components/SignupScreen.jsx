@@ -14,6 +14,7 @@ const SignupScreen = () => {
     });
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     
     const { register } = useAuth(); // Removemos loading del contexto para el signup también
@@ -91,7 +92,8 @@ const SignupScreen = () => {
         try {
             const result = await register(formData.name, formData.lastname, formData.email, formData.phone , formData.password);
             if (result) {
-                setSuccess('¡Cuenta creada exitosamente! Redirigiendo al login...');
+                setSuccess('¡Cuenta creada exitosamente!');
+                setShowSuccessModal(true);
 
                 // Limpiar formulario
                 setFormData({
@@ -157,7 +159,7 @@ const SignupScreen = () => {
               <div className="mt-2 text-sm">
                 <Link
                   to="/login"
-                  className="text-pink-600 hover:text-pink-700 underline"
+                  className="text-purple-600 hover:text-purple-700 underline"
                 >
                   ¿Ya tienes cuenta? Inicia sesión aquí
                 </Link>
@@ -270,9 +272,9 @@ const SignupScreen = () => {
             <label className="block text-sm font-medium text-gray-300 mb-1">Confirmar Contraseña</label>
             <input
               type="password"
-              placeholder="Confirmar Contraseña"
+              placeholder="******"
               className="input input-bordered w-full bg-[#0b1220] text-white"
-              name="*******"
+              name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
               onKeyDown={(e) => e.key === "Enter" && handleSignup()}
@@ -298,6 +300,30 @@ const SignupScreen = () => {
         </p>
       </div>
     </div>
+     {/* → Aquí va tu modal ← */}
+    {showSuccessModal && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="absolute inset-0 bg-black bg-opacity-40" />
+        <div className="relative bg-white rounded-lg shadow-lg w-11/12 max-w-md p-6">
+          <div className="flex items-center mb-3">
+            <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center mr-3">
+              <span className="text-white">✓</span>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-800">Cuenta creada</h3>
+          </div>
+          <p className="text-gray-600 mb-4">{success} Presiona "Aceptar" para ir al login.</p>
+          <div className="flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => navigate('/login', { replace: true })}
+              className="px-4 py-2 rounded-full bg-purple-400 text-white hover:bg-purple-500"
+            >
+              Aceptar
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
   </div>
 );
 

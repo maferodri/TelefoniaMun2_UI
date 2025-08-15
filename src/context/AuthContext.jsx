@@ -48,15 +48,8 @@ export const AuthProvider = ( {children} ) => {
     };
 
     const register = async (name, lastname, email, phone,  password) => {
-        try {
-            setLoading(true);
-            const result = await authService.register(name, lastname, email, phone, password);
-            return result;
-        } catch (error) {
-            throw error;
-        } finally {
-            setLoading(false);
-        }
+        const result = await authService.register(name, lastname, email, phone, password);
+        return result;
     };
 
     const logout = () => {
