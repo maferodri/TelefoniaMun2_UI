@@ -38,20 +38,13 @@ export const AuthProvider = ( {children} ) => {
     } ,[])
 
     const login = async (email, password) => {
-        try {
-            setLoading(true);
-            await authService.login(email, password);
-            const currentUser = authService.getCurrentUser()
-            if (currentUser) {
-                setUser(currentUser);
-                setIsAuthenticated(true);
-            }
-            return true;
-        }catch(error){
-            throw error
-        }finally{
-            setLoading(false);
+        await authService.login(email, password);
+        const currentUser = authService.getCurrentUser();
+        if (currentUser) {
+            setUser(currentUser);
+            setIsAuthenticated(true);
         }
+        return true;
     };
 
     const register = async (name, lastname, email, phone,  password) => {
