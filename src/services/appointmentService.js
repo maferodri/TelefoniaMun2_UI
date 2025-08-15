@@ -71,7 +71,7 @@ export const appointmentService = {
       const data = await handleResponse(res);
       return normalizeOne(data);
     } catch (error) {
-      console.error("Error al crear la cita:", error);
+      console.error("object Objeita:", error);
       throw error;
     }
   },
