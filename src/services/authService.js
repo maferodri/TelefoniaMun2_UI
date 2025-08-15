@@ -3,7 +3,6 @@ import { API_BASE_URL, handleResponse} from "./api.js"
 export const authService = {
     
     login: async (email, password) => {
-        try{
             const response  = await fetch( `${API_BASE_URL}/login`, {
                 method: 'POST'
                 , headers: {
@@ -14,24 +13,35 @@ export const authService = {
                 })
             });
 
-            // Si no es 2xx, forzamos nuestro mensaje genérico
+            // Manejo explícito para evitar redirecciones globales del handleResponse en 401
             if (!response.ok) {
-                throw new Error('Correo o contraseña incorrectos');
+                // Intentar leer el cuerpo para obtener mensaje del backend
+                let message = 'Error al iniciar sesión. Intenta nuevamente.';
+                try {
+                    const errData = await response.json();
+                    if (errData && (errData.detail || errData.message)) {
+                        message = errData.detail || errData.message;
+                    }
+                } catch {
+                    // Ignorar errores de parseo
+                }
+
+                if (response.status === 401) {
+                    // Mensaje claro para credenciales inválidas
+                    throw new Error('Credenciales inválidas. Verifica tu email y contraseña.');
+                }
+
+                throw new Error(message);
             }
 
             const data = await response.json();
-            const token = data.token || data.idToken;
-            if (!token) throw new Error('Respuesta inválida del servidor'); 
 
-            localStorage.setItem('authToken', token);
-            const userInfo = decodeToken(token);
-            localStorage.setItem('userInfo', JSON.stringify(userInfo));
-
-            return true;
-
-        }catch(error){
-            throw new Error('Correo o contraseña incorrectos')
-        }
+            if (data.token){
+                localStorage.setItem('authToken', data.token);
+                const userInfo = decodeToken(data.token);
+                localStorage.setItem('userInfo', JSON.stringify(userInfo));
+            }
+            return data;
     },
 
     register: async (name, lastname, email, phone, password) => {
