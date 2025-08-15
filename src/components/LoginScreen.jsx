@@ -6,33 +6,57 @@ const LoginScreen = () => {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [loading, setLoading ] = useState(false);
     const [error, setError] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const { login } = useAuth();
     const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setError("");
-
-       try {
-        const success = await login(email, password); // login devuelve true o lanza error
-        if (success) {
-            navigate("/dashboard");
-        } else {
-            // Si login devuelve false
-            setError("Correo o contraseña incorrectos. Intente de nuevo.");
+     const handleLogin = async () => {
+        // Evitar múltiples envíos
+        if (isSubmitting) {
+            return;
         }
-        } catch (err) {
-            console.error("Error en login:", err);
-            // Si backend manda mensaje en detail, úsalo
-            const msg = err?.message || err?.detail || "Correo o contraseña incorrectos. Intente de nuevo.";
-            setError(msg);
+
+        setError("");
+        setIsSubmitting(true);
+
+        // Validaciones básicas (solo formato, no complejidad)
+        if (!email.trim()) {
+            setError('El email es requerido');
+            setIsSubmitting(false);
+            return;
+        }
+
+        // Validación básica de formato de email (no tan estricta)
+        if (!email.includes('@') || !email.includes('.')) {
+            setError('Por favor ingresa un email válido');
+            setIsSubmitting(false);
+            return;
+        }
+
+        if (!password.trim()) {
+            setError('La contraseña es requerida');
+            setIsSubmitting(false);
+            return;
+        }
+        
+        // Sin validaciones complejas de contraseña para login
+        // El servidor validará las credenciales
+
+        try {
+            console.log("Intentando login con:", { email, password: "***" });
+            const result = await login(email, password);
+            console.log("Resultado del login:", result);
+            if (result) {
+                navigate("/dashboard", { replace: true });
+            }
+        } catch (error) {
+            console.error("Error en login:", error);
+            setError(error.message || 'Error al iniciar sesión. Intenta nuevamente.');
         } finally {
-            setLoading(false);
-    }
-    }
+            setIsSubmitting(false);
+        }
+    };
 
 return (
   <div className="min-h-screen bg-[#0f172a] flex items-center justify-center p-4">
@@ -53,36 +77,51 @@ return (
         </div>
 
         {/* Mensaje de error */}
-        {error && (
-          <div className="mb-4 p-3 bg-red-900 border border-red-500 text-red-300 rounded-md">
-            {error}
-          </div>
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-md">
+              <div className="flex items-center">
+                <span className="mr-2">❌</span>
+                <span>{error}</span>
+              </div>
+            </div>
         )}
 
         {/* Formulario */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form 
+          className="space-y-4"
+          noValidate
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleLogin();
+          }}>
           <input
             type="email"
-            placeholder="Correo electrónico"
+            placeholder="correo@gmail.com"
             className="input input-bordered w-full bg-[#0b1220] text-white"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+                        setEmail(e.target.value);
+                        if (error) setError(''); // Limpiar error cuando el usuario escriba
+                    }}
           />
 
           <input
             type="password"
-            placeholder="Contraseña"
+            placeholder="*******"
             className="input input-bordered w-full bg-[#0b1220] text-white"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+                        setPassword(e.target.value);
+                        if (error) setError(''); // Limpiar error cuando el usuario escriba
+                    }}
           />
 
           <button
             type="submit"
             className="btn btn-primary w-full text-black rounded-full bg-purple-200 hover:bg-purple-300 border-none"
-            disabled={loading}
+            disabled={isSubmitting}
           >
-            {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
+            {isSubmitting ? "Iniciando sesión..." : "Iniciar Sesión"}
           </button>
         </form>
 
