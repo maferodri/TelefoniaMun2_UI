@@ -16,7 +16,17 @@ const handleResponse = async (response) => {
       case 400:
         throw new Error(errorData.message || 'Este email ya está registrado. Intenta con otro email.');
       case 401:
-        // Solo lanzamos el error, sin redirección automática
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userInfo');
+        if (typeof window !== 'undefined') {
+          // Compatibilidad con HashRouter en GitHub Pages
+          const loginHashUrl = `${window.location.origin}${window.location.pathname}#/login`;
+          const currentUrl = window.location.href;
+          const alreadyOnLogin = currentUrl.includes('#/login') || currentUrl.endsWith('/login');
+          if (!alreadyOnLogin) {
+            window.location.replace(loginHashUrl);
+          }
+        }
         throw new Error('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
       case 403:
         throw new Error('No tienes permisos para realizar esta acción.');
