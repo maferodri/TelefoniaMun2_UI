@@ -285,7 +285,7 @@ const SignupScreen = () => {
               </div>
 
               <button
-                type="button"
+                type="submit"
                 onClick={handleSignup}
                 disabled={isSubmitting}
                 className="btn btn-primary w-full rounded-full text-black bg-purple-200 hover:bg-purple-300 border-none"
