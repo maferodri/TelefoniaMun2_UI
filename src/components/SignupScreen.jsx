@@ -206,7 +206,7 @@ const SignupScreen = () => {
             <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
             <input
               type="email"
-              placeholder="Email"
+              placeholder="nombre@gmail.com"
               className="input input-bordered w-full bg-[#0b1220] text-white"
               name="email"
               value={formData.email}
@@ -218,7 +218,7 @@ const SignupScreen = () => {
             <label className="block text-sm font-medium text-gray-300 mb-1">Teléfono</label>
             <input
               type="tel"
-              placeholder="Teléfono"
+              placeholder="9999-5555"
               className="input input-bordered w-full bg-[#0b1220] text-white"
               name="phone"
               value={formData.phone}
@@ -230,7 +230,7 @@ const SignupScreen = () => {
             <label className="block text-sm font-medium text-gray-300 mb-1">Contraseña</label>
             <input
               type="password"
-              placeholder="Contraseña"
+              placeholder="*******"
               className="input input-bordered w-full bg-[#0b1220] text-white"
               name="password"
               value={formData.password}
@@ -272,7 +272,7 @@ const SignupScreen = () => {
               type="password"
               placeholder="Confirmar Contraseña"
               className="input input-bordered w-full bg-[#0b1220] text-white"
-              name="confirmPassword"
+              name="*******"
               value={formData.confirmPassword}
               onChange={handleChange}
               onKeyDown={(e) => e.key === "Enter" && handleSignup()}
