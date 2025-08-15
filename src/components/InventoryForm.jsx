@@ -148,7 +148,7 @@ const InventoryForm = ({ item, inventoryTypes, onSuccess, onCancel }) => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Fecha de creación *
+                Fecha de edición *
               </label>
               <input
                 type="datetime-local"
