@@ -9,52 +9,38 @@ const apiConfig = {
 };
 
 //Función helper para manejar respuestas de la API
-export async function handleResponse(res) {
-  const ct = res.headers.get("content-type") || "";
-  let data = null;
-  let text = null;
-
-  try {
-    if (ct.includes("application/json")) {
-      data = await res.json();
-    } else {
-      text = await res.text();
+const handleResponse = async (response) => {
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    switch (response.status) {
+      case 400:
+        throw new Error(errorData.message || 'Este email ya está registrado. Intenta con otro email.');
+      case 401:
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userInfo');
+        if (typeof window !== 'undefined') {
+          // Compatibilidad con HashRouter en GitHub Pages
+          const loginHashUrl = `${window.location.origin}${window.location.pathname}#/login`;
+          const currentUrl = window.location.href;
+          const alreadyOnLogin = currentUrl.includes('#/login') || currentUrl.endsWith('/login');
+          if (!alreadyOnLogin) {
+            window.location.replace(loginHashUrl);
+          }
+        }
+        throw new Error('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+      case 403:
+        throw new Error('No tienes permisos para realizar esta acción.');
+      case 404:
+        throw new Error('El recurso solicitado no fue encontrado.');
+      case 409:
+        throw new Error('El usuario ya existe en el sistema.');
+      case 500:
+        throw new Error('Error interno del servidor. Intenta nuevamente más tarde.');
+      default:
+        throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
     }
-  } catch {}
+  }
+  return response.json();
+};
 
-  if (res.ok) return data ?? (text ?? null);
-
-  const extract = (payload) => {
-    if (!payload) return null;
-    if (typeof payload === "string") return payload;
-    if (payload.detail) {
-      if (typeof payload.detail === "string") return payload.detail;
-      if (Array.isArray(payload.detail)) {
-        // Errores de Pydantic
-        return payload.detail
-          .map((d) => d?.msg || d?.message || JSON.stringify(d))
-          .join(" | ");
-      }
-    }
-    return payload.message || payload.error || null;
-  };
-
-  const serverMsg = extract(data) || extract(text);
-
-  const fallback =
-    ({
-      400: "Solicitud inválida.",
-      401: "Credenciales inválidas.",
-      403: "No tienes permisos para realizar esta acción.",
-      404: "El recurso solicitado no fue encontrado.",
-      409: "Conflicto con datos existentes.",
-      422: "Datos inválidos. Revisa los campos.",
-      500: "Error interno del servidor. Intenta más tarde.",
-    }[res.status] || `Error ${res.status}: ${res.statusText || "Desconocido"}`);
-
-  const err = new Error(serverMsg || fallback);
-  err.status = res.status;
-  err.data = data ?? text;
-  throw err;
-}
-export { API_BASE_URL };
+export { API_BASE_URL, handleResponse };
