@@ -52,7 +52,18 @@ const LoginScreen = () => {
             }
         } catch (error) {
             console.error("Error en login:", error);
-            setError(error.message || 'Error al iniciar sesión. Intenta nuevamente.');
+            // Intentar mostrar error.message si existe
+            let msg = '';
+            if (typeof error === 'string') {
+                msg = error;
+            } else if (error?.message) {
+                msg = error.message;
+            } else {
+                // Para cualquier otro objeto
+                msg = JSON.stringify(error);
+            }
+
+            setError(msg || 'Error en email o contraseña.');
         } finally {
             setIsSubmitting(false);
         }

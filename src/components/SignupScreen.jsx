@@ -104,9 +104,6 @@ const SignupScreen = () => {
                     password: '',
                     confirmPassword: ''
                 });
-
-
-                navigate('/login', { replace: true });
             }
         } catch (error) {
             console.error('Error en registro:', error);
